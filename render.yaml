@@ -1,0 +1,67 @@
+databases:
+  - name: starlight-db
+    plan: free
+
+services:
+  - type: web
+    name: starlight-discovery
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Starlight-Discovery/Dockerfile
+    dockerContext: ./Starlight-Discovery
+
+  - type: web
+    name: starlight-user
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Starlight-User/Dockerfile
+    dockerContext: ./Starlight-User
+    envVars: &backendEnv
+      - key: EUREKA_URL
+        value: http://starlight-discovery:10000/eureka/
+      - key: DB_HOST
+        fromDatabase:
+          name: starlight-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: starlight-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: starlight-db
+          property: database
+      - key: DB_USERNAME
+        fromDatabase:
+          name: starlight-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: starlight-db
+          property: password
+
+  - type: web
+    name: starlight-room
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Starlight-Room/Dockerfile
+    dockerContext: ./Starlight-Room
+    envVars: *backendEnv
+
+  - type: web
+    name: starlight-booking
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Starlight-Booking/Dockerfile
+    dockerContext: ./Starlight-Booking
+    envVars: *backendEnv
+
+  - type: web
+    name: starlight-gateway
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Starlight-Gateway/Dockerfile
+    dockerContext: ./Starlight-Gateway
+    envVars:
+      - key: EUREKA_URL
+        value: http://starlight-discovery:10000/eureka/
