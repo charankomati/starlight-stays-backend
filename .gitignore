@@ -1,0 +1,9 @@
+.metadata/
+**/target/
+**/.classpath
+**/.project
+**/.settings/
+*.log
+.env
+.env.*
+!.env.example
